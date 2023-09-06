@@ -10,12 +10,14 @@ django==2.0.9
 # Environment
 django-environ==0.4.5
 
+# Django REST framework
+djangorestframework==3.9.0
+
 # Passwords security
 argon2-cffi==20.1.0
 
 # Static files
 whitenoise==4.1.2
-
 
 # Celery
 redis>=3.2.0
