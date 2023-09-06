@@ -29,8 +29,9 @@ class UserLoginSerializer(serializers.Serializer):
         """Verify user credentials."""
         user = authenticate(username=data['email'], password=data['password'])
         if not user:
-            raise serializers.ValidationError('Invalid credentials')
-
+            raise serializers.ValidationError({'credentials': 'Invalid credentials'})
+        if not user.is_verified:
+            raise serializers.ValidationError({'email': 'Account is not active yet.'})
         self.context['user'] = user
         return data
 
@@ -71,13 +72,13 @@ class UserSignUpSerializer(serializers.Serializer):
         passwd = data['password']
         passwd_conf = data['password_confirmation']
         if passwd != passwd_conf:
-            raise serializers.ValidationError({"password_confirmation": "Passwords don't match"})
+            raise serializers.ValidationError({'password_confirmation': "Passwords don't match"})
         password_validation.validate_password(passwd)
         return data
 
     def create(self, data):
         """Handle user and profile creation."""
         data.pop('password_confirmation')
-        user = User.objects.create_user(**data, is_client=True)
+        user = User.objects.create_user(**data, is_verified=False)
         Profile.objects.create(user=user)
         return user
