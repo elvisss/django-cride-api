@@ -4,10 +4,15 @@ from django.contrib.auth import password_validation, authenticate
 from django.core.validators import RegexValidator
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.utils import timezone
+from django.conf import settings
 
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.validators import UniqueValidator
+
+from datetime import timedelta
+import jwt
 
 from cride.users.models import User, Profile
 
@@ -101,4 +106,11 @@ class UserSignUpSerializer(serializers.Serializer):
 
     def gen_verification_token(self, user):
         """Create JWT token that the user can use to verify its account."""
-        return "abc"
+        exp_date = timezone.now() + timedelta(days=3)
+        payload = {
+            'user': user.username,
+            'exp': int(exp_date.timestamp()),
+            'type': 'email_confirmation',
+        }
+        token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+        return token.decode()
