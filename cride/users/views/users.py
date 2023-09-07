@@ -2,7 +2,7 @@
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from cride.users.serializers import UserModelSerializer, UserLoginSerializer, UserSignUpSerializer
+from cride.users.serializers import UserModelSerializer, UserLoginSerializer, UserSignUpSerializer, AccountVerificationSerializer
 
 class UserLoginAPIView(APIView):
     """User Login API View"""
@@ -29,3 +29,16 @@ class UserSignUpAPIView(APIView):
         user = serializer.save()
         data = UserModelSerializer(user).data
         return Response(data, status=status.HTTP_201_CREATED)
+
+class AccountVerificationAPIView(APIView):
+    """User verify account API View"""
+
+    def get(self, request, *args, **kwargs):
+        """Handle HTTP GET requiest"""
+        serializer = AccountVerificationSerializer(data=request.GET)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        data = {
+            'message': 'Congratulation, your account has been verified'
+        }
+        return Response(data, status=status.HTTP_200_OK)
