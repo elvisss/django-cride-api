@@ -5,7 +5,7 @@ from rest_framework import serializers
 from cride.circles.models import Circle
 
 
-class CircleSerializer(serializers.ModelSerializer):
+class CircleModelSerializer(serializers.ModelSerializer):
     """Circle serializer"""
 
     members_limit = serializers.IntegerField(

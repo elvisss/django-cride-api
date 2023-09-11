@@ -3,7 +3,7 @@
 from rest_framework import mixins, viewsets
 from rest_framework.permissions import IsAuthenticated
 
-from cride.circles.serializers import CircleSerializer
+from cride.circles.serializers import CircleModelSerializer
 from cride.circles.permissions import isCircleAdmin
 from cride.circles.models import Circle, Membership
 
@@ -14,7 +14,7 @@ class CircleViewSet(mixins.CreateModelMixin,
                     viewsets.GenericViewSet):
     """Circle view set."""
 
-    serializer_class = CircleSerializer
+    serializer_class = CircleModelSerializer
     lookup_field = 'slug_name'
 
     def get_queryset(self):

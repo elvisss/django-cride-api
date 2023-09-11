@@ -1,16 +1,37 @@
 """User views"""
-from rest_framework.views import APIView
+from rest_framework import mixins
 from rest_framework.decorators import action
 from rest_framework import status, viewsets
 from rest_framework.response import Response
-from cride.users.serializers import UserModelSerializer, UserLoginSerializer, UserSignUpSerializer, AccountVerificationSerializer
-from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
-class UserViewSet(viewsets.GenericViewSet):
+from cride.users.permissions import IsAccountOwner
+from cride.users.serializers import UserModelSerializer, UserLoginSerializer, UserSignUpSerializer, AccountVerificationSerializer
+from cride.users.models import User
+from cride.circles.models import Circle
+from cride.circles.serializers import CircleModelSerializer
+
+
+class UserViewSet(mixins.RetrieveModelMixin,
+                  viewsets.GenericViewSet):
     """User View set.
 
     Handle sign up, login and account verification.
     """
+
+    queryset = User.objects.filter(is_active=True, is_client=True)
+    serializer_class = UserModelSerializer
+    lookup_field = 'username'
+
+    def get_permissions(self):
+        """Assign permissions based on action."""
+        if self.action in ['signup', 'login', 'verify']:
+            permissions = [AllowAny]
+        elif self.action in ['retrieve']:
+            permissions = [IsAuthenticated, IsAccountOwner]
+        else:
+            permissions = [IsAuthenticated]
+        return [p() for p in permissions]
 
     @action(detail=False, methods=['post'])
     def signup(self, request):
@@ -43,6 +64,17 @@ class UserViewSet(viewsets.GenericViewSet):
             'message': 'Congratulation, your account has been verified'
         }
         return Response(data, status=status.HTTP_200_OK)
+
+    def retrieve(self, request, *args, **kwargs):
+        """Add extra data to the response."""
+        response = super(UserViewSet, self).retrieve(request, *args, **kwargs)
+        circles = Circle.objects.filter(members=request.user, membership__is_active=True)
+        data = {
+            'user': response.data,
+            'circles': CircleModelSerializer(circles, many=True).data
+        }
+        response.data = data
+        return response
 
 """ class UserLoginAPIView(APIView):
     def post(self, request, *args, **kwargs):

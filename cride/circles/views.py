@@ -3,13 +3,13 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from cride.circles.models import Circle
-from cride.circles.serializers import CircleSerializer, CreateCircleSerializer
+from cride.circles.serializers import CircleModelSerializer, CreateCircleSerializer
 
 @api_view(['GET'])
 def list_circles(request):
     """List circles"""
     circles = Circle.objects.filter(is_public=True)
-    serializer = CircleSerializer(circles, many=True)
+    serializer = CircleModelSerializer(circles, many=True)
     return Response(serializer.data)
 
 @api_view(['POST'])
@@ -22,4 +22,4 @@ def create_circle(request):
     circle = serializer.save()
 
     # Return response
-    return Response(CircleSerializer(circle).data)
+    return Response(CircleModelSerializer(circle).data)
