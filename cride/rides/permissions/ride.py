@@ -8,3 +8,10 @@ class IsRideOwner(BasePermission):
     def has_object_permission(self, request, view, obj):
         """Verify user is owner of the ride."""
         return request.user == obj.offered_by
+
+class IsNotRiderOwner(BasePermission):
+    """Verify requesting user is the ride owner."""
+
+    def has_object_permission(self, request, view, obj):
+        """Verify user is owner of the ride."""
+        return request.user != obj.offered_by

@@ -10,7 +10,7 @@ from datetime import timedelta
 
 from cride.circles.models import Circle
 from cride.circles.permissions import IsActiveCircleMember
-from cride.rides.permissions import IsRideOwner
+from cride.rides.permissions import IsRideOwner, IsNotRiderOwner
 from cride.rides.serializers import CreateRideSerializer, RideModelSerializer, JoinRideSerializer
 
 
@@ -35,6 +35,8 @@ class RideViewSet(mixins.ListModelMixin,
         permissions = [IsAuthenticated, IsActiveCircleMember]
         if self.action in ['update', 'partial_update']:
             permissions.append(IsRideOwner)
+        if self.action == 'join':
+            permissions.append(IsNotRiderOwner)
         return [p() for p in permissions]
 
     def get_serializer_context(self):
