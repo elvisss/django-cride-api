@@ -11,7 +11,7 @@ from datetime import timedelta
 from cride.circles.models import Circle
 from cride.circles.permissions import IsActiveCircleMember
 from cride.rides.permissions import IsRideOwner, IsNotRiderOwner
-from cride.rides.serializers import CreateRideSerializer, RideModelSerializer, JoinRideSerializer, EndRideSerializer
+from cride.rides.serializers import CreateRideSerializer, RideModelSerializer, JoinRideSerializer, EndRideSerializer, CreateRideRatingSerializer
 
 
 class RideViewSet(mixins.ListModelMixin,
@@ -54,11 +54,13 @@ class RideViewSet(mixins.ListModelMixin,
             return JoinRideSerializer
         if self.action == 'finish':
             return EndRideSerializer
+        if self.action == 'rate':
+            return CreateRideRatingSerializer
         return RideModelSerializer
 
     def get_queryset(self):
         """Return active circle's rides."""
-        if self.action != 'finish':
+        if self.action not in ['finish', 'rate', 'retrieve']:
             offset = timezone.now() + timedelta(minutes=10)
             return self.circle.ride_set.filter(
                 departure_date__gte=offset,
@@ -98,3 +100,19 @@ class RideViewSet(mixins.ListModelMixin,
         serializer.save()
         data = RideModelSerializer(ride).data
         return Response(data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['post'])
+    def rate(self, request, *args, **kwargs):
+        """Rate a ride."""
+        ride = self.get_object()
+        serializer_class = self.get_serializer_class()
+        context = self.get_serializer_context()
+        context['ride'] = ride
+        serializer = serializer_class(
+            data=request.data,
+            context=context,
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        data = RideModelSerializer(ride).data
+        return Response(data, status=status.HTTP_201_CREATED)
