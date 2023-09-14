@@ -8,7 +8,7 @@ from cride.circles.models import Membership
 class IsActiveCircleMember(BasePermission):
     """Allow access only to circle members."""
 
-    def has_object_permission(self, request, view):
+    def has_object_permission(self, request, view, obj):
         """Verify user is an active member of the circle."""
         try:
             Membership.objects.get(
