@@ -8,6 +8,18 @@ from cride.rides.models import Ride
 from cride.circles.models import Membership
 
 
+class RideModelSerializer(serializers.ModelSerializer):
+    """Ride model serializer."""
+
+    class Meta:
+        """Meta class."""
+
+        model = Ride
+        fields = '__all__'
+        read_only_fields = (
+            'offered_by', 'offered_in', 'rating'
+        )
+
 class CreateRideSerializer(serializers.ModelSerializer):
     """Create ride serializer."""
 
