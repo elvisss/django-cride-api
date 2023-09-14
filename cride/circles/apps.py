@@ -6,4 +6,4 @@ class CirclesAppConfig(AppConfig):
     """Circles app config."""
 
     name = 'cride.circles'
-    verbose_name = 'circles'
+    verbose_name = 'Circles'

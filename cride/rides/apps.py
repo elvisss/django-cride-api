@@ -6,4 +6,4 @@ class RidesAppConfig(AppConfig):
     """Rides app config."""
 
     name = 'cride.rides'
-    verbose_name = 'rides'
+    verbose_name = 'Rides'

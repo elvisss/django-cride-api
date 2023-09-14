@@ -1,6 +1,7 @@
 """Circle model."""
 
 from django.db import models
+
 from cride.utils.models import CRideModel
 
 class Circle(CRideModel):

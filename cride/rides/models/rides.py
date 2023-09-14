@@ -1,4 +1,4 @@
-"""Rides models."""
+"""Ride model."""
 
 from django.db import models
 
