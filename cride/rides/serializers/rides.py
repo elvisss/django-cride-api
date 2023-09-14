@@ -1,7 +1,6 @@
 """Rides serializer."""
 
 from rest_framework import serializers
-from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from datetime import timedelta
 
@@ -18,7 +17,7 @@ class CreateRideSerializer(serializers.ModelSerializer):
         """Meta class."""
 
         model = Ride
-        exclue = ('offered_in', 'passengers', 'rating', 'is_active')
+        exclude = ('offered_in', 'passengers', 'rating', 'is_active')
 
     def validate_departure_date(self, data):
         """Verify date is not in the past."""
